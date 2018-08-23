@@ -1,0 +1,22 @@
+{
+  "name": "statup-desktop",
+  "author": "Hunter Long",
+  "license": "GNU",
+  "version": "0.0.1",
+  "description": "Statup Desktop application to monitor your web services",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/hunterlong/statup",
+  "keywords": [
+    "Statup"
+  ],
+  "devDependencies": {
+    "electron": "^2.0.8"
+  },
+  "dependencies": {
+    "path": "^0.12.7",
+    "request": "^2.88.0"
+  }
+}
