@@ -6,14 +6,84 @@
   "description": "Statup Desktop application to monitor your web services",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder -wml",
+    "dist-mac": "electron-builder -m",
+    "release": "electron-builder -ml -p always",
+    "release-win": "electron-builder -w -p always"
   },
   "repository": "https://github.com/hunterlong/statup",
   "keywords": [
     "Statup"
   ],
+  "build": {
+    "appId": "com.statup",
+    "productName": "Statup",
+    "files": [
+      "main.js",
+      "assets/",
+      "bin/",
+      "lib/",
+      "node_modules/",
+      "package.json"
+    ],
+    "dmg": {
+      "contents": [
+        {
+          "x": 210,
+          "y": 260
+        },
+        {
+          "x": 490,
+          "y": 260,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "window": {
+        "width": 700,
+        "height": 425
+      }
+    },
+    "mac": {
+      "publish": [
+        "github"
+      ],
+      "category": "financial"
+    },
+    "linux": {
+      "publish": [
+        "github"
+      ],
+      "target": [
+        "deb"
+      ]
+    },
+    "win": {
+      "publish": [
+        "github"
+      ],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
+    }
+  },
   "devDependencies": {
-    "electron": "^2.0.8"
+    "electron": "^2.0.8",
+    "electron-builder": "^20.28.2"
   },
   "dependencies": {
     "path": "^0.12.7",

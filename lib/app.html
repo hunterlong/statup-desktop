@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+
+<script>
+    var path = require('path')
+    var statup = require(path.join(__dirname, '/statup'))
+</script>
+
 <body>
 <webview src="http://localhost:3834" webpreferences="allowRunningInsecureContent, javascript=yes"></webview>
 

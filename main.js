@@ -2,6 +2,7 @@
 const {app, BrowserWindow, ipcMain, Tray, Notification} = require('electron')
 var path = require('path')
 var url = require('url')
+app.dock.hide()
 
 var statup = require(path.join(__dirname, '/lib/statup'))
 
@@ -13,8 +14,6 @@ let mainWindow
 
 statup.Start()
 
-app.dock.hide()
-
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -23,9 +22,6 @@ function createWindow () {
       show: false,
       nodeIntegration: false
   })
-
-  // and load the index.html of the app.
-  // mainWindow.loadURL('http://localhost:'+PORT)
 
     mainWindow.loadURL(url.format({
         pathname: path.join(__dirname, '/lib/app.html'),
@@ -39,7 +35,7 @@ function createWindow () {
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
-      statup.Kill()
+    statup.Kill()
     mainWindow = null
   })
 }
@@ -77,14 +73,13 @@ const createTrayWindow = () => {
     })
     window.loadURL(`file://${path.join(__dirname, '/lib/tray.html')}`)
 
-    window.openDevTools({mode: 'detach'})
+    // window.openDevTools({mode: 'detach'})
 
-    // Hide the window when it loses focus
-    // window.on('blur', () => {
-    //     if (!window.webContents.isDevToolsOpened()) {
-    //         window.hide()
-    //     }
-    // })
+    window.on('blur', () => {
+        if (!window.webContents.isDevToolsOpened()) {
+            window.hide()
+        }
+    })
 }
 
 
@@ -160,9 +155,7 @@ function ShowNotification(text, body) {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', function() {
-
     createTray()
-
     createTrayWindow()
     createWindow()
 })

@@ -5,3 +5,4 @@ bin/*
 plugins
 config.yml
 statup.db
+dist
