@@ -1,5 +1,8 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, ipcMain, Tray, Notification} = require('electron')
+var AutoLaunch = require('auto-launch');
+const {autoUpdater} = require("electron-updater");
+var log = require('electron-log');
 var path = require('path')
 var url = require('url')
 app.dock.hide()
@@ -11,6 +14,9 @@ let window = undefined
 let settingsWindow = undefined
 
 let mainWindow
+
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = "info";
 
 statup.Start()
 
@@ -74,6 +80,7 @@ const createTrayWindow = () => {
     window.loadURL(`file://${path.join(__dirname, '/lib/tray.html')}`)
 
     // window.openDevTools({mode: 'detach'})
+    // autoUpdater.checkForUpdates();
 
     window.on('blur', () => {
         if (!window.webContents.isDevToolsOpened()) {
@@ -150,6 +157,34 @@ function ShowNotification(text, body) {
         console.log('Notification clicked')
     }
 }
+
+autoUpdater.on('checking-for-update', () => {
+    log.info('Checking for update...');
+})
+autoUpdater.on('update-available', (info) => {
+    ShowNotification("New Update Available", "Statup is downloading a new version of the application...")
+})
+autoUpdater.on('update-not-available', (info) => {
+    log.info('Update not available.');
+})
+autoUpdater.on('error', (err) => {
+    log.info('Error in auto-updater. ' + err);
+})
+autoUpdater.on('download-progress', (progressObj) => {
+    let log_message = "Download speed: " + progressObj.bytesPerSecond;
+    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+    log.info(log_message);
+})
+
+autoUpdater.on('update-downloaded', (info) => {
+    log.info('Update downloaded');
+    ShowNotification("Statup Update Ready!", "To complete the update, restart Statup.")
+});
+
+ipcMain.on("quitAndInstall", (event, arg) => {
+    autoUpdater.quitAndInstall();
+});
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

@@ -1,7 +1,7 @@
 {
   "name": "statup-desktop",
   "author": "Hunter Long",
-  "license": "GNU",
+  "license": "UNLICENSED",
   "version": "0.0.1",
   "description": "Statup Desktop application to monitor your web services",
   "main": "main.js",
@@ -12,7 +12,7 @@
     "release": "electron-builder -ml -p always",
     "release-win": "electron-builder -w -p always"
   },
-  "repository": "https://github.com/hunterlong/statup",
+  "repository": "https://github.com/hunterlong/statup-desktop",
   "keywords": [
     "Statup"
   ],
@@ -86,6 +86,10 @@
     "electron-builder": "^20.28.2"
   },
   "dependencies": {
+    "auto-launch": "^5.0.5",
+    "electron-log": "^2.2.17",
+    "electron-store": "^2.0.0",
+    "electron-updater": "^3.1.1",
     "path": "^0.12.7",
     "request": "^2.88.0"
   }
