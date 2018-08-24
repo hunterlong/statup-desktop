@@ -1,24 +1,24 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, ipcMain, Tray, Notification} = require('electron')
+// app.dock.hide()
 var AutoLaunch = require('auto-launch');
 const {autoUpdater} = require("electron-updater");
 var log = require('electron-log');
 var path = require('path')
 var url = require('url')
-app.dock.hide()
+var os = require('os')
+log.transports.console.level = true;
 
 var statup = require(path.join(__dirname, '/lib/statup'))
 
 let tray = undefined
 let window = undefined
 let settingsWindow = undefined
-
+let home
 let mainWindow
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
-
-statup.Start()
 
 function createWindow () {
   // Create the browser window.
@@ -29,26 +29,33 @@ function createWindow () {
       nodeIntegration: false
   })
 
-    mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, '/lib/app.html'),
-        protocol: 'file:',
-        slashes: true
-    }));
+    log.info("statup path: ", statup.path)
 
     setTimeout(function() {
-        ShowNotification("Se33rvice Offline", "sokdksokdosww3")
-    }, 3000)
+        mainWindow.loadURL(url.format({
+            pathname: path.join(__dirname, '/lib/app.html'),
+            protocol: 'file:',
+            slashes: true
+        }));
+    }, 5000)
 
-  // Emitted when the window is closed.
-  mainWindow.on('closed', function () {
-    statup.Kill()
-    mainWindow = null
-  })
+    mainWindow.on('ready-to-show', function () {
+        // mainWindow.show()
+        // mainWindow = null
+    })
+
+    mainWindow.on('closed', function () {
+        mainWindow.hide()
+    })
+
+    mainWindow.on('minimized', function () {
+        mainWindow.hide()
+    })
 }
 
 
 const createTray = () => {
-    tray = new Tray(path.join(__dirname, 'assets/statup.png'))
+    tray = new Tray(path.join(__dirname, 'images/statup.png'))
     tray.on('right-click', toggleWindow)
     tray.on('double-click', toggleWindow)
     tray.on('click', function (event) {
@@ -72,15 +79,13 @@ const createTrayWindow = () => {
         resizable: false,
         transparent: true,
         webPreferences: {
-            // Prevents renderer process code from not running when window is
-            // hidden
             backgroundThrottling: false
         }
     })
-    window.loadURL(`file://${path.join(__dirname, '/lib/tray.html')}`)
 
-    // window.openDevTools({mode: 'detach'})
-    // autoUpdater.checkForUpdates();
+    setTimeout(function() {
+        window.loadURL(`file://${path.join(__dirname, '/lib/tray.html')}`)
+    }, 5000)
 
     window.on('blur', () => {
         if (!window.webContents.isDevToolsOpened()) {
@@ -139,11 +144,21 @@ ipcMain.on('openSettings', () => {
 
 ipcMain.on('serviceDown', (info) => {
     tray.setToolTip("Service is down!")
-    tray.setImage(path.join(__dirname, '/assets/statup-error.png'))
+    tray.setImage(path.join(__dirname, '/images/statup-error.png'))
 });
 
 ipcMain.on('serviceUp', (info) => {
-    tray.setImage(path.join(__dirname, '/assets/statup.png'))
+    tray.setImage(path.join(__dirname, '/images/statup.png'))
+});
+
+ipcMain.on('refreshMain', (info) => {
+    window.loadURL(`file://${path.join(__dirname, '/lib/tray.html')}`)
+});
+
+ipcMain.on('closeApp', (info) => {
+   statup.Kill()
+    tray.destroy()
+    app.quit()
 });
 
 function ShowNotification(text, body) {
@@ -154,7 +169,7 @@ function ShowNotification(text, body) {
     myNotification.show()
 
     myNotification.onclick = () => {
-        console.log('Notification clicked')
+        log.info('Notification clicked')
     }
 }
 
@@ -190,16 +205,23 @@ ipcMain.on("quitAndInstall", (event, arg) => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', function() {
+    home = app.getPath('userData')
+    log.warn("path: ", home)
+    log.warn("app is ready ", os.platform(), statup.path)
+    statup.Start(home)
     createTray()
     createTrayWindow()
     createWindow()
+    log.info("app completed ready event")
 })
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd +
-  app.quit()
+  // statup.Kill()
+  // app.quit()
+    log.info("app has all windows closed")
 })
 
 app.on('activate', function () {

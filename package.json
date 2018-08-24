@@ -5,10 +5,13 @@
   "version": "0.0.1",
   "description": "Statup Desktop application to monitor your web services",
   "main": "main.js",
+  "email": "info@statup.io",
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder -wml",
     "dist-mac": "electron-builder -m",
+    "dist-linux": "electron-builder -l",
+    "dist-win": "electron-builder -w",
     "release": "electron-builder -ml -p always",
     "release-win": "electron-builder -w -p always"
   },
@@ -21,12 +24,12 @@
     "productName": "Statup",
     "files": [
       "main.js",
-      "assets/",
-      "bin/",
+      "images/",
       "lib/",
       "node_modules/",
       "package.json"
     ],
+    "extraResources": "bin/statup",
     "dmg": {
       "contents": [
         {
