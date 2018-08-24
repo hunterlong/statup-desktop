@@ -20,3 +20,5 @@ rm -f statup.zip
 mv statup.exe bin/
 npm run dist-win
 rm -f bin/statup.exe
+
+echo "Complete"

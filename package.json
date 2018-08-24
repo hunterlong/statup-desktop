@@ -8,6 +8,7 @@
   "email": "info@statup.io",
   "scripts": {
     "start": "electron .",
+    "compile-all": "/bin/bash -c ./build.sh",
     "dist": "electron-builder -wml",
     "dist-mac": "electron-builder -m",
     "dist-linux": "electron-builder -l",

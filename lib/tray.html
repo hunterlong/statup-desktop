@@ -3,24 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-355, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="photon.min.css">
 </head>
 <script>
     var path = require('path')
     var statup = require(path.join(__dirname, '/statup'))
 </script>
 <body>
+<div class="header-arrow"></div>
+<div class="window">
+    <header class="toolbar toolbar-header">
+        <div class="toolbar-actions">
+            <div class="btn-group">
+                <button onclick="statup.OpenApp()" class="btn btn-default">
+                    <span class="icon icon-chart-area"></span>
+                </button>
+                <button onclick="statup.Refresh()" class="btn btn-default">
+                    <span class="icon icon-arrows-ccw"></span>
+                </button>
+                <button onclick="statup.OpenSettings()" class="btn btn-default">
+                    <span class="icon icon-cog"></span>
+                </button>
+                <button onclick="statup.OpenURL('https://github.com/hunterlong/statup')" class="btn btn-default">
+                    <span class="icon icon-help-circled"></span>
+                </button>
+            </div>
 
-<div class="tray_settings">
-    <span>Statup</span>
-    <div onclick="statup.CloseApp()" class="tray_icon" style="width:18px;height:18px;margin:-1px 0 0 8px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"> <title></title> <g id="icomoon-ignore"> </g> <path d="M256 0c-141.385 0-256 114.615-256 256s114.615 256 256 256 256-114.615 256-256-114.615-256-256-256zM256 464c-114.875 0-208-93.125-208-208s93.125-208 208-208 208 93.125 208 208-93.125 208-208 208z"></path> <path d="M336 128l-80 80-80-80-48 48 80 80-80 80 48 48 80-80 80 80 48-48-80-80 80-80z"></path> </svg></div>
+            <button onclick="ConfirmClose()" class="pull-right active btn btn-default">
+                <span class="icon icon-cancel-circled"></span>
+            </button>
+        </div>
+    </header>
 
-    <div onclick="statup.OpenSettings()" class="tray_icon" style="margin:-3px 0 0 10px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M413.967 276.8c1.06-6.235 1.06-13.518 1.06-20.8s-1.06-13.518-1.06-20.8l44.667-34.318c4.26-3.118 5.319-8.317 2.13-13.518L418.215 115.6c-2.129-4.164-8.507-6.235-12.767-4.164l-53.186 20.801c-10.638-8.318-23.394-15.601-36.16-20.801l-7.448-55.117c-1.06-4.154-5.319-8.318-10.638-8.318h-85.098c-5.318 0-9.577 4.164-10.637 8.318l-8.508 55.117c-12.767 5.2-24.464 12.482-36.171 20.801l-53.186-20.801c-5.319-2.071-10.638 0-12.767 4.164L49.1 187.365c-2.119 4.153-1.061 10.399 2.129 13.518L96.97 235.2c0 7.282-1.06 13.518-1.06 20.8s1.06 13.518 1.06 20.8l-44.668 34.318c-4.26 3.118-5.318 8.317-2.13 13.518L92.721 396.4c2.13 4.164 8.508 6.235 12.767 4.164l53.187-20.801c10.637 8.318 23.394 15.601 36.16 20.801l8.508 55.117c1.069 5.2 5.318 8.318 10.637 8.318h85.098c5.319 0 9.578-4.164 10.638-8.318l8.518-55.117c12.757-5.2 24.464-12.482 36.16-20.801l53.187 20.801c5.318 2.071 10.637 0 12.767-4.164l42.549-71.765c2.129-4.153 1.06-10.399-2.13-13.518l-46.8-34.317zm-158.499 52c-41.489 0-74.46-32.235-74.46-72.8s32.971-72.8 74.46-72.8 74.461 32.235 74.461 72.8-32.972 72.8-74.461 72.8z"></path></svg></div>
-    <div onclick="statup.Refresh()" class="tray_icon" style="width:16px;height:16px;margin:0px 0 0 0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"> <title></title> <g id="icomoon-ignore"> </g> <path d="M512 192h-192l71.765-71.765c-36.265-36.263-84.48-56.235-135.765-56.235s-99.5 19.972-135.765 56.235c-36.263 36.265-56.235 84.48-56.235 135.765s19.972 99.5 56.235 135.765c36.265 36.263 84.48 56.235 135.765 56.235s99.5-19.972 135.764-56.236c3.028-3.027 5.93-6.146 8.728-9.334l48.16 42.141c-46.923 53.583-115.832 87.429-192.652 87.429-141.385 0-256-114.615-256-256s114.615-256 256-256c70.693 0 134.684 28.663 181.008 74.992l74.992-74.992v192z"></path> </svg></div>
+    <div class="window-content">
 
+        <div class="close_overlay" id="confirm_close">
+            <header>
+            <div class="toolbar-actions">
+                <button onclick="CancelClose()" class="btn btn-default pull-right">Cancel</button>
+                <button onclick="statup.CloseApp()" class="btn btn-negative pull-right">Close Statup</button>
+            </div>
+            </header>
+        </div>
+
+<webview src="http://localhost:8080/tray" webpreferences="allowRunningInsecureContent, javascript=yes"></webview>
+
+    </div>
+
+    <footer class="toolbar toolbar-footer">
+        <h1 class="title">Statup</h1>
+    </footer>
 
 </div>
 
-<webview src="http://localhost:8080/tray" webpreferences="allowRunningInsecureContent, javascript=yes"></webview>
+<script>
+    var confirm = document.getElementById("confirm_close");
+
+    function ConfirmClose() {
+        confirm.style.display = "block";
+    }
+
+    function CancelClose() {
+        confirm.style.display = "none";
+    }
+
+</script>
 
 <style>
     BODY {
@@ -28,16 +75,32 @@
     }
     webview {
         position: absolute;
-        top: 35px;
+        top: 0;
         left: 0;
         width: 100%;
-        height: calc(100% - 35px);
+        height: 100%;
         display: inline-flex !important;
         border: 0;
     }
 
     webview::-webkit-scrollbar { width: 0 !important }
     BODY::-webkit-scrollbar { width: 0 !important }
+
+    .toolbar {
+        -webkit-app-region: no-drag;
+    }
+
+    .toolbar-actions {
+        -webkit-app-region: no-drag;
+    }
+
+    .close_overlay {
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 99999;
+        display: none;
+    }
 
     .tray_settings {
         position: absolute;
@@ -69,6 +132,17 @@
     .tray_icon svg {
         fill: currentColor;
         cursor: pointer;
+    }
+
+    .header-arrow {
+        position: absolute;
+        top: -4px;
+        left: 50%;
+        margin-left: -5px;
+        height: 10px;
+        width: 10px;
+        transform: rotate(45deg);
+        background-color: #e8e6e8;
     }
 
 </style>

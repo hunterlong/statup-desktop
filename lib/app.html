@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="photon.min.css">
 </head>
 
 <script>
@@ -11,15 +12,25 @@
 </script>
 
 <body>
-<webview src="http://localhost:8080" webpreferences="allowRunningInsecureContent, javascript=yes"></webview>
+<div class="window">
+    <header class="toolbar toolbar-header">
+        <div class="toolbar-actions">
+            <button onclick="statup.CloseMainWindow()" class="btn btn-large btn-default">
+                Close
+            </button>
+        </div>
+    </header>
+    <webview src="http://localhost:8080" webpreferences="allowRunningInsecureContent, javascript=yes"></webview>
 
+    </div>
+</div>
 <style>
     webview {
         position: absolute;
-        top: 0;
+        top: 41px;
         left: 0;
         width: 100%;
-        height: 100%;
+        height: calc(100% - 41px);
         display: inline-flex !important;
     }
 </style>

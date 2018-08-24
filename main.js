@@ -1,6 +1,6 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain, Tray, Notification} = require('electron')
-// app.dock.hide()
+const {app, BrowserWindow, ipcMain, Tray, Notification, shell} = require('electron')
+app.dock.hide()
 var AutoLaunch = require('auto-launch');
 const {autoUpdater} = require("electron-updater");
 var log = require('electron-log');
@@ -26,7 +26,13 @@ function createWindow () {
       width: 995,
       height: 750,
       show: false,
-      nodeIntegration: false
+      frame: false,
+      fullscreenable: false,
+      resizable: false,
+      transparent: true,
+      webPreferences: {
+          backgroundThrottling: false
+      }
   })
 
     log.info("statup path: ", statup.path)
@@ -37,20 +43,40 @@ function createWindow () {
             protocol: 'file:',
             slashes: true
         }));
-    }, 5000)
+    }, 2500)
+
+    // mainWindow.openDevTools()
+
+    mainWindow.onbeforeunload = (e) => {
+        e.returnValue = false;
+        mainWindow.hide()
+    }
 
     mainWindow.on('ready-to-show', function () {
         // mainWindow.show()
         // mainWindow = null
     })
 
-    mainWindow.on('closed', function () {
-        mainWindow.hide()
-    })
-
     mainWindow.on('minimized', function () {
         mainWindow.hide()
     })
+}
+
+
+function createSettingsWindow() {
+    settingsWindow = new BrowserWindow({
+        width: 600,
+        height: 480,
+        show: false,
+        frame: false,
+        fullscreenable: false,
+        resizable: false,
+        transparent: true,
+        webPreferences: {
+            backgroundThrottling: false
+        }
+    })
+    settingsWindow.loadURL(`file://${path.join(__dirname, '/lib/settings.html')}`)
 }
 
 
@@ -60,6 +86,8 @@ const createTray = () => {
     tray.on('double-click', toggleWindow)
     tray.on('click', function (event) {
         toggleWindow()
+
+        tray.setHighlightMode('selection')
 
         // Show devtools when command clicked
         if (window.isVisible() && process.defaultApp && event.metaKey) {
@@ -85,7 +113,8 @@ const createTrayWindow = () => {
 
     setTimeout(function() {
         window.loadURL(`file://${path.join(__dirname, '/lib/tray.html')}`)
-    }, 5000)
+        ShowNotification("Statup is Online", "Statup is currently monitoring your services, click the logo for more details.")
+    }, 2500)
 
     window.on('blur', () => {
         if (!window.webContents.isDevToolsOpened()) {
@@ -129,14 +158,23 @@ ipcMain.on('show-window', () => {
     showWindow()
 })
 
-ipcMain.on('openSettings', () => {
-    settingsWindow = new BrowserWindow({
-        width: 500,
-        height: 480,
-        show: true
-    })
-    settingsWindow.loadURL(`file://${path.join(__dirname, '/lib/settings.html')}`)
+ipcMain.on('openApp', () => {
+    mainWindow.show()
+})
 
+ipcMain.on('closeMain', () => {
+    mainWindow.hide()
+})
+
+ipcMain.on('openSettings', () => {
+    settingsWindow.show()
+    // tray.setToolTip(`${weather.currently.summary} at ${time}`)
+    // tray.setImage(path.join(assetsDirectory, 'cloudTemplate.png'))
+})
+
+
+ipcMain.on('closeSettings', () => {
+    settingsWindow.hide()
     // tray.setToolTip(`${weather.currently.summary} at ${time}`)
     // tray.setImage(path.join(assetsDirectory, 'cloudTemplate.png'))
 })
@@ -156,16 +194,29 @@ ipcMain.on('refreshMain', (info) => {
 });
 
 ipcMain.on('closeApp', (info) => {
-   statup.Kill()
+    statup.Kill()
     tray.destroy()
     app.quit()
 });
 
+
+ipcMain.on('openDataDir', (info) => {
+    shell.openItem(home)
+});
+
+ipcMain.on('openDock', (e, data) => {
+   if (data.open) {
+       app.dock.show()
+   } else {
+       app.dock.hide()
+   }
+});
+
 function ShowNotification(text, body) {
     let myNotification = new Notification(text, {
-        body: body
+        body: body,
+        sound: 'lib/notification.wav'
     })
-
     myNotification.show()
 
     myNotification.onclick = () => {
@@ -212,6 +263,7 @@ app.on('ready', function() {
     createTray()
     createTrayWindow()
     createWindow()
+    createSettingsWindow()
     log.info("app completed ready event")
 })
 

@@ -1,14 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Statup Settings</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="photon.min.css">
+    <script>
+        var path = require('path')
+        var statup = require(path.join(__dirname, '/statup'))
+    </script>
 </head>
-<script>
-    var path = require('path')
-    var statup = require(path.join(__dirname, '/statup'))
-</script>
+
 <body>
-Settings here
+<!-- Wrap your entire app inside .window -->
+<div class="window">
+    <header class="toolbar toolbar-header">
+
+    </header>
+    <div class="window-content">
+        <div class="pane-group">
+            <div class="pane">
+                <div class="padded-more">
+                <form>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="radios" checked>
+                            Local Connection
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="radios">
+                            Remote Statup Server
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Server Host</label>
+                        <input type="text" class="form-control" placeholder="Hostname or IP of Statup">
+                    </div>
+                    <div class="form-group">
+                        <label>Server Port</label>
+                        <input type="number" class="form-control" value="8080">
+                    </div>
+                    <div class="form-group">
+                        <label>API Key</label>
+                        <input type="text" class="form-control" placeholder="API Key">
+                    </div>
+                    <div class="form-group">
+                        <label>API Secret</label>
+                        <input type="text" class="form-control" placeholder="API Secret">
+                    </div>
+                </form>
+                </div>
+            </div>
+            <div class="pane">
+                <div class="padded-more">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox"> Start Statup on Boot
+                    </label>
+                </div>
+                </div>
+            </div>
+            <div class="pane">
+                <div class="padded-more">
+                    <button onclick="statup.OpenDataDirectory()" class="btn btn-large btn-default">Open Statup Directory</button>
+
+                    <button onclick="statup.Kill()" class="btn btn-large btn-default">Stop Server</button>
+
+                    <button onclick="statup.Start()" class="btn btn-large btn-default">Start Server</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="toolbar toolbar-footer">
+        <div class="toolbar-actions">
+            <button onclick="statup.CloseSettings()" class="btn btn-default">
+                Close
+            </button>
+
+            <button class="btn btn-primary pull-right">
+                Save Settings
+            </button>
+        </div>
+    </footer>
+</div>
+</div>
 </body>
+
+<style>
+    header {
+        -webkit-app-region: drag;
+    }
+</style>
 </html>
