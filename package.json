@@ -9,7 +9,7 @@
   "scripts": {
     "start": "electron .",
     "compile-all": "/bin/bash -c ./build.sh",
-    "dist": "electron-builder -wml",
+    "dist": "electron-builder -wml --publish always",
     "dist-mac": "electron-builder -m",
     "dist-linux": "electron-builder -l",
     "dist-win": "electron-builder -w",
