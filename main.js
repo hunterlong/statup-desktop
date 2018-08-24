@@ -24,7 +24,7 @@ function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
       width: 995,
-      height: 750,
+      height: 780,
       show: false,
       frame: false,
       fullscreenable: false,
@@ -77,6 +77,23 @@ function createSettingsWindow() {
         }
     })
     settingsWindow.loadURL(`file://${path.join(__dirname, '/lib/settings.html')}`)
+}
+
+
+function LoadTrayIcon() {
+    var count = 1;
+    setInterval(function(){
+        if (count>7) {
+            setTimeout(function() {
+                tray.setImage(path.join(__dirname, 'images/statup.png'))
+                return false;
+            }, 1200)
+            return false;
+        }
+        log.warn("going to img: ", count)
+        tray.setImage(path.join(__dirname, 'images/icons/'+count+'.png'))
+        count++
+    }, 250);
 }
 
 
@@ -191,6 +208,7 @@ ipcMain.on('serviceUp', (info) => {
 
 ipcMain.on('refreshMain', (info) => {
     window.loadURL(`file://${path.join(__dirname, '/lib/tray.html')}`)
+    LoadTrayIcon()
 });
 
 ipcMain.on('closeApp', (info) => {
@@ -215,7 +233,7 @@ ipcMain.on('openDock', (e, data) => {
 function ShowNotification(text, body) {
     let myNotification = new Notification(text, {
         body: body,
-        sound: 'lib/notification.wav'
+        sound: path.join(__dirname, '/lib/notification.wav')
     })
     myNotification.show()
 
@@ -264,6 +282,7 @@ app.on('ready', function() {
     createTrayWindow()
     createWindow()
     createSettingsWindow()
+    LoadTrayIcon()
     log.info("app completed ready event")
 })
 
