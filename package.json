@@ -1,11 +1,11 @@
 {
   "name": "statup-desktop",
-  "author": "Hunter Long",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "version": "0.0.1",
   "description": "Statup Desktop application to monitor your web services",
   "main": "main.js",
   "email": "info@statup.io",
+  "author": "Hunter Long <info@statup.io>",
   "scripts": {
     "start": "electron .",
     "compile-all": "/bin/bash -c ./build.sh",
