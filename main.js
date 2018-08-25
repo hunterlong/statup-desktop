@@ -222,6 +222,12 @@ ipcMain.on('openDataDir', (info) => {
     shell.openItem(home)
 });
 
+
+ipcMain.on('sendNotification', (info, data) => {
+    ShowNotification(data.title,data.body)
+});
+
+
 ipcMain.on('openDock', (e, data) => {
    if (data.open) {
        app.dock.show()

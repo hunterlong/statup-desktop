@@ -1,7 +1,7 @@
 {
   "name": "statup-desktop",
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Statup Desktop application to monitor your web services",
   "main": "main.js",
   "email": "info@statup.io",
