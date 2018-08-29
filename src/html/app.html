@@ -3,27 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="photon.min.css">
+    <link rel="stylesheet" href="../css/photon.min.css">
 </head>
 
 <script>
-    var path = require('path')
-    var statup = require(path.join(__dirname, '/statup'))
+    var remote = require('electron').remote
+    var statup = remote.app.StatupLib()
 </script>
 
 <body>
 <div class="window">
     <header class="toolbar toolbar-header">
         <div class="toolbar-actions">
-            <button onclick="statup.CloseMainWindow()" class="btn btn-large btn-default">
+            <button onclick="remote.app.closeMain()" class="btn btn-large btn-default">
                 Close
             </button>
         </div>
     </header>
-    <webview src="http://localhost:8080" webpreferences="allowRunningInsecureContent, javascript=yes"></webview>
+    <webview id="webview" webpreferences="allowRunningInsecureContent, javascript=yes"></webview>
 
     </div>
 </div>
+
+<script>
+    document.getElementById("webview").src = statup.URL();
+</script>
 <style>
     webview {
         position: absolute;

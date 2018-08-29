@@ -1,15 +1,20 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain, Tray, Notification, shell} = require('electron')
-app.dock.hide()
+const {app, BrowserWindow, ipcMain, Tray, shell} = require('electron')
+// app.dock.hide()
 var AutoLaunch = require('auto-launch');
 const {autoUpdater} = require("electron-updater");
 var log = require('electron-log');
 var path = require('path')
 var url = require('url')
 var os = require('os')
+var request = require('request');
+const notifier = require('node-notifier');
+
+var services = [];
 log.transports.console.level = true;
 
-var statup = require(path.join(__dirname, '/lib/statup'))
+var Statup = require(path.join(__dirname, '/src/js/statup'))
+var statup = new Statup(app)
 
 let tray = undefined
 let window = undefined
@@ -19,6 +24,43 @@ let mainWindow
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
+
+app.StatupLib = () => {
+  return statup
+}
+
+app.Settings = () => {
+  return statup.settings
+}
+
+function CheckServices() {
+  log.warn(statup.settings)
+  let secret = statup.settings.secret
+  log.warn("checking with api: ", statup.URL()+"/api/services", secret)
+    request({
+        url : statup.URL()+"/api/services",
+        headers : {
+            "Authorization" : secret
+        }
+    }, function (error, response, body) {
+        services = JSON.parse(body)
+        CheckOnlineServices()
+    });
+}
+
+
+function CheckOnlineServices() {
+    services.forEach(function(service) {
+        if (!service.online) {
+            var notification = {title: "Service Offline", body: "Your service '"+service.name+"' is currently offline!"}
+            log.warn(notification)
+
+            // ShowNotification(notification.title, notification.body)
+
+        }
+    });
+}
+
 
 function createWindow () {
   // Create the browser window.
@@ -39,10 +81,11 @@ function createWindow () {
 
     setTimeout(function() {
         mainWindow.loadURL(url.format({
-            pathname: path.join(__dirname, '/lib/app.html'),
+            pathname: path.join(__dirname, '/src/html/app.html'),
             protocol: 'file:',
             slashes: true
         }));
+
     }, 2500)
 
     // mainWindow.openDevTools()
@@ -55,6 +98,10 @@ function createWindow () {
     mainWindow.on('ready-to-show', function () {
         // mainWindow.show()
         // mainWindow = null
+        setInterval(function() {
+          CheckServices();
+        }, 30000)
+
     })
 
     mainWindow.on('minimized', function () {
@@ -76,7 +123,7 @@ function createSettingsWindow() {
             backgroundThrottling: false
         }
     })
-    settingsWindow.loadURL(`file://${path.join(__dirname, '/lib/settings.html')}`)
+    settingsWindow.loadURL(`file://${path.join(__dirname, '/src/html/settings.html')}`)
 }
 
 
@@ -90,7 +137,6 @@ function LoadTrayIcon() {
             }, 1200)
             return false;
         }
-        log.warn("going to img: ", count)
         tray.setImage(path.join(__dirname, 'images/icons/'+count+'.png'))
         count++
     }, 250);
@@ -129,8 +175,8 @@ const createTrayWindow = () => {
     })
 
     setTimeout(function() {
-        window.loadURL(`file://${path.join(__dirname, '/lib/tray.html')}`)
-        ShowNotification("Statup is Online", "Statup is currently monitoring your services, click the logo for more details.")
+        window.loadURL(`file://${path.join(__dirname, '/src/html/tray.html')}`)
+        // ShowNotification("Statup is Online", "Statup is currently monitoring your services, click the logo for more details.")
     }, 2500)
 
     window.on('blur', () => {
@@ -175,26 +221,27 @@ ipcMain.on('show-window', () => {
     showWindow()
 })
 
-ipcMain.on('openApp', () => {
+app.openApp = () => {
     mainWindow.show()
-})
+}
 
-ipcMain.on('closeMain', () => {
+app.closeMain = () => {
     mainWindow.hide()
-})
+}
 
-ipcMain.on('openSettings', () => {
+app.openSettings = () => {
+    statup.LoadYaml()
     settingsWindow.show()
     // tray.setToolTip(`${weather.currently.summary} at ${time}`)
     // tray.setImage(path.join(assetsDirectory, 'cloudTemplate.png'))
-})
+}
 
 
-ipcMain.on('closeSettings', () => {
+app.closeSettings = () => {
     settingsWindow.hide()
     // tray.setToolTip(`${weather.currently.summary} at ${time}`)
     // tray.setImage(path.join(assetsDirectory, 'cloudTemplate.png'))
-})
+}
 
 
 ipcMain.on('serviceDown', (info) => {
@@ -206,46 +253,48 @@ ipcMain.on('serviceUp', (info) => {
     tray.setImage(path.join(__dirname, '/images/statup.png'))
 });
 
-ipcMain.on('refreshMain', (info) => {
-    window.loadURL(`file://${path.join(__dirname, '/lib/tray.html')}`)
+app.refreshMain = () => {
+    window.loadURL(`file://${path.join(__dirname, '/src/html/tray.html')}`)
     LoadTrayIcon()
-});
+}
 
-ipcMain.on('closeApp', (info) => {
+app.closeApp = () => {
     statup.Kill()
     tray.destroy()
     app.quit()
-});
+}
 
 
-ipcMain.on('openDataDir', (info) => {
+app.openDataDir = () => {
     shell.openItem(home)
-});
+}
 
 
-ipcMain.on('sendNotification', (info, data) => {
-    ShowNotification(data.title,data.body)
-});
+app.sendNotification = (info, data) => {
+    ShowNotification(data.title, data.body)
+}
 
 
-ipcMain.on('openDock', (e, data) => {
+app.openDock = (e, data) => {
    if (data.open) {
        app.dock.show()
    } else {
        app.dock.hide()
    }
-});
+}
 
 function ShowNotification(text, body) {
-    let myNotification = new Notification(text, {
-        body: body,
-        sound: path.join(__dirname, '/lib/notification.wav')
-    })
-    myNotification.show()
+    log.warn("new notification", text, body, path.join(__dirname, '/src/sounds/notification.wav'))
 
-    myNotification.onclick = () => {
-        log.info('Notification clicked')
-    }
+    notifier.notify({
+      title: text,
+      message: body,
+      sound: 'Ping'
+    });
+
+    notifier.on('click', function(notifierObject, options) {
+      // Triggers if `wait: true` and user clicks notification
+    });
 }
 
 autoUpdater.on('checking-for-update', () => {

@@ -1,7 +1,7 @@
 {
   "name": "statup-desktop",
   "license": "MIT",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Statup Desktop application to monitor your web services",
   "main": "main.js",
   "email": "info@statup.io",
@@ -26,7 +26,7 @@
     "files": [
       "main.js",
       "images/",
-      "lib/",
+      "src/",
       "node_modules/",
       "package.json"
     ],
@@ -94,7 +94,9 @@
     "electron-log": "^2.2.17",
     "electron-store": "^2.0.0",
     "electron-updater": "^3.1.1",
+    "js-yaml": "^3.12.0",
     "path": "^0.12.7",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "node-notifier": "^5.2.1"
   }
 }

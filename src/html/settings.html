@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Statup Settings</title>
+    <link rel="stylesheet" href="../css/photon.min.css">
+    <script>
+        var remote = require('electron').remote
+        var statup = remote.app.StatupLib()
+        var settings = remote.app.Settings()
+    </script>
+</head>
+<body>
+<div class="window">
+    <header class="toolbar toolbar-header">
+
+    </header>
+    <div class="window-content">
+        <div class="pane-group">
+            <div class="pane">
+                <div class="padded-more">
+                <form id="settings">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" id="local" name="local" checked>
+                            Local Connection
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" id="remote" name="remote">
+                            Remote Statup Server
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Statup URL</label>
+                        <input type="text" id="url" name="url" class="form-control" placeholder="Hostname or IP of Statup">
+                    </div>
+                    <div class="form-group">
+                        <label>API Key</label>
+                        <input type="text" id="key" name="key" class="form-control" placeholder="API Key">
+                    </div>
+                    <div class="form-group">
+                        <label>API Secret</label>
+                        <input type="text" id="secret" name="secret" class="form-control" placeholder="API Secret">
+                    </div>
+                </div>
+            </div>
+            <div class="pane">
+                <div class="padded-more">
+                    <div class="form-group">
+                        <label>Database Type</label>
+                        <input type="text" id="type" name="type" class="form-control" placeholder="mysql">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Database Host</label>
+                        <input type="text" id="host" name="host" class="form-control" placeholder="localhost">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Database Port</label>
+                        <input type="text" id="port" name="port" class="form-control" placeholder="3306">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Database Username</label>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Username">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Database Password</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Password">
+                    </div>
+
+                </div>
+            </div>
+            <div class="pane">
+                <div class="padded-more">
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="onboot" name="onboot"> Start Statup on Boot
+                        </label>
+                    </div>
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="notifications" name="notifications"> Enable Notifications
+                        </label>
+                    </div>
+
+                    <button onclick="remote.app.openDataDir()" class="btn btn-large btn-default">Open Statup Directory</button>
+
+                    <button onclick="statup.Kill()" class="btn btn-large btn-default">Stop Server</button>
+
+                    <button onclick="statup.Start()" class="btn btn-large btn-default">Start Server</button>
+
+                    <button onclick="statup.LoadYaml()" class="btn btn-large btn-default">Reload Config</button>
+
+                    <button onclick="statup.DeleteData()" class="btn btn-large btn-default">Delete All Data</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="toolbar toolbar-footer">
+        <div class="toolbar-actions">
+            <button onclick="remote.app.closeSettings()" class="btn btn-default">
+                Close
+            </button>
+
+            <button type="submit" class="btn btn-primary pull-right">
+                Save Settings
+            </button>
+        </div>
+    </footer>
+    </form>
+</div>
+</div>
+</body>
+
+<script>
+
+    document.getElementById("url").value = settings.url;
+    document.getElementById("key").value = settings.key;
+    document.getElementById("secret").value = settings.secret;
+
+    document.getElementById("local").checked = settings.type === 'local';
+    document.getElementById("remote").checked = settings.type === 'remote';
+    document.getElementById("host").value = settings.host;
+    document.getElementById("port").value = settings.port;
+    document.getElementById("username").value = settings.username;
+    document.getElementById("password").value = settings.password;
+    document.getElementById("onboot").checked = settings.onboot;
+    document.getElementById("notifications").checked = settings.notification;
+    // document.getElementById("secret").value = settings.secret;
+
+    document.getElementById("settings").addEventListener("submit", function(e, data) {
+        console.log(e, data);
+
+        var elements = document.getElementById("settings").elements;
+        var obj = [];
+        for(var i = 0 ; i < elements.length ; i++){
+          var item = elements.item(i);
+          if (item.name && item.value) {
+              obj.push({name: item.name, value: item.value});
+          }
+        }
+        // statup.SaveSettings(obj)
+        console.log(obj)
+        e.preventDefault();
+    });
+
+</script>
+
+<style>
+    header {
+        -webkit-app-region: drag;
+    }
+</style>
+</html>
